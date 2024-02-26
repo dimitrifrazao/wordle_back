@@ -1,0 +1,1 @@
+INSERT INTO `game` (userId) VALUES ('user_id');

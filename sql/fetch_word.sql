@@ -1,0 +1,1 @@
+SELECT * FROM `wordList` ORDER BY RAND() LIMIT 1;

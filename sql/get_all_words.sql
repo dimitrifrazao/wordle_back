@@ -1,0 +1,1 @@
+SELECT words FROM `wordList`;

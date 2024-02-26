@@ -1,0 +1,1 @@
+LOCK TABLES game WRITE;
