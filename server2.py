@@ -6,7 +6,6 @@ import uuid
 import sys
 import enum
 import logging
-from server_data import ServerData
 import json_database
 logging.getLogger('flask_cors').level = logging.DEBUG
 
@@ -86,8 +85,6 @@ class Wordle(Resource):
                 print("missed word")
                 return json.dumps({'status':Status.MISMATCH.value, 'letter_colors': letter_colors, 'word':None}), 200, {'ContentType':'application/json'} 
 
-    #@cross_origin(supports_credentials=True)    
-    #@app.route('/wordle/get-user', methods=['POST'])
     def get(self):
         
         print("Wordle post")
@@ -112,25 +109,11 @@ def index():
 
 if __name__ == '__main__':
     argv = sys.argv[1:]
-    ip = 'localhost'
+    host='0.0.0.0'
     port = 5000
-    kwargs = {}
+
     if len(argv) > 0:
-        kwargs['user'] =argv[0]
-    if len(argv) > 1:
-        kwargs['password'] = argv[1]
-    if len(argv) > 2:
-        kwargs['host'] =argv[2]
-    if len(argv) > 3:
-        assert len(argv) == 5, "must enter ip and port"
-        ip = argv[3]
-        port = int(argv[4])
+        host = argv[0]
+        port = int(argv[1])
 
-    if kwargs:
-        kwargs['database'] = 'wordDB'
-
-    ServerData.createFile(ip, str(port))
-    if port == 5000:
-        app.run(debug=True, port=port)
-    else:
-        app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host=host, port=port, debug=True)
