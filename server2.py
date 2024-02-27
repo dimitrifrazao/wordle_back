@@ -111,9 +111,11 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
     host='0.0.0.0'
     port = 5000
+    debug = True
 
     if len(argv) > 0:
-        host = argv[0]
+        host = str(argv[0])
         port = int(argv[1])
+        debug = bool(argv[2])
 
-    app.run(host=host, port=port, debug=True)
+    app.run(host=host, port=port, debug=debug)
