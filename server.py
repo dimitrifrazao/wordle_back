@@ -3,7 +3,7 @@ from flask.wrappers import Response
 from flask_restful import Resource, Api, reqparse
 from flask_cors import CORS, cross_origin
 import uuid
-import database
+import database as database
 import sys
 import enum
 import logging

@@ -1,10 +1,6 @@
-import sqlalchemy
-#from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, inspect, sqlalchemy.text
-#from sqlalchemy.orm import relationship, backref, sessionmaker
-#from sqlalchemy.ext.declarative import declarative_base
+import mysql.connector
 import os
 import enum
-
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class DataBase:
@@ -23,10 +19,20 @@ class DataBase:
         sixthGuess = 5
 
     def __init__(self, user:str = 'root', password: str ='', host:str = "localhost", database=None):
-        
-        database_uri = "mysql+mysqlconnector://{}:{}@{}/{}".format(user, password, host, database)
-        self.engine = sqlalchemy.create_engine(database_uri)
-        self.connection = self.engine.connect()
+        print("starting mysql connection")
+        self.user = user
+        self.password = password
+        self.host = host
+        self.database = database
+
+    def connect(self):
+        kwargs = {}
+        if self.user: kwargs['user'] = self.user
+        if self.password: kwargs['password'] = self.password
+        if self.host: kwargs['host'] = self.host
+        if self.database: kwargs['database'] = self.database
+        self.conn = mysql.connector.connect(**kwargs)
+        self.cursor = self.conn.cursor()
 
     @classmethod
     def createDefault(cls):
@@ -36,9 +42,12 @@ class DataBase:
     def createDefaultNoDatabase(cls):
         return cls(user=cls.DEFAULT_USER, password=cls.DEFAULT_PASSWORD, host=cls.DEFAULT_HOST, database=None)
 
+    def commit(self):
+        self.conn.commit()
+
     def close(self):
         print("closing mysql connection")
-        self.connection.close()
+        self.conn.close()
 
     def testConnections(self):
         assert self.getWord(), "failed to get word from database"
@@ -48,34 +57,26 @@ class DataBase:
 
     def databaseExists(self):
         sql_command = self.getCommandFromFile(file_name="database_exists.sql")
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        return result.fetchone() != None
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchone() != None
 
     def hasTables(self):
         sql_command = self.getCommandFromFile(file_name="count_tables.sql")
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        data = result.fetchone()
+        self.cursor.execute(sql_command)
+        data = self.cursor.fetchone()
         return int(data[0]) == 2
 
     def createDatabase(self):
         sql_command = self.getCommandFromFile(file_name="create_database.sql")
-        self.connection.execute(sqlalchemy.text(sql_command))
+        self.cursor.execute(sql_command)
         print("database wordDB created")
 
     def createTables(self):
         sql_command = self.getCommandFromFile(file_name="create_wordlist_table.sql")
-        self.connection.execute(sqlalchemy.text(sql_command))
+        self.cursor.execute(sql_command)
         sql_command = self.getCommandFromFile(file_name="create_game_table.sql")
-        self.connection.execute(sqlalchemy.text(sql_command))
+        self.cursor.execute(sql_command)
         print("tables created")
-
-    def lockTable(self):
-        sql_command = self.getCommandFromFile(file_name="lock_table.sql")
-        self.connection.execute(sqlalchemy.text(sql_command))
-
-    def unlockTables(self):
-        sql_command = self.getCommandFromFile(file_name="unlock_tables.sql")
-        self.connection.execute(sqlalchemy.text(sql_command))
 
     def addWordsFromFile(self, file_name: str):
         file_path = os.path.join(dir_path, "sql", file_name)
@@ -89,36 +90,36 @@ class DataBase:
     def addWord(self, word: str):
         sql_command = self.getCommandFromFile(file_name="add_word.sql")
         sql_command = sql_command.replace("word_str", word)
-        self.connection.execute(sqlalchemy.text(sql_command))
-        self.connection.commit()
+        self.cursor.execute(sql_command)
+        self.commit()
 
     def hasWord(self, word:str):
         sql_command = self.getCommandFromFile(file_name="has_word.sql")
         sql_command = sql_command.replace("word_str", word)
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        return len(result.all()) > 0
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchone()
 
     def getWord(self):
         sql_command = self.getCommandFromFile(file_name="fetch_word.sql")
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        return result.fetchone()
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchone()
 
     def getAllWords(self):
         sql_command = self.getCommandFromFile(file_name="get_all_words.sql")
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        return result.fetchone()
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchone()
 
     def addUser(self, user_id: str):
         sql_command = self.getCommandFromFile(file_name="add_user.sql")
         sql_command = sql_command.replace("user_id", user_id)
-        self.connection.execute(sqlalchemy.text(sql_command))
-        self.connection.commit()
+        self.cursor.execute(sql_command)
+        self.commit()
 
     def hasUser(self, user_id: str):
         sql_command = self.getCommandFromFile(file_name="has_user.sql")
         sql_command = sql_command.replace("user_id", user_id)
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        return result.fetchone()
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchone()
 
     def setUserData(self, user_id:str, word:str, index_str: str):
         index = int(index_str)
@@ -129,27 +130,27 @@ class DataBase:
         sql_command = sql_command.replace("user_id", user_id)
         sql_command = sql_command.replace("guess", guess)
         sql_command = sql_command.replace("word", word)
-        self.connection.execute(sqlalchemy.text(sql_command))
-        self.connection.commit()
+        self.cursor.execute(sql_command)
+        self.commit()
 
     def getUserData(self, user_id:str) -> list:
         sql_command = self.getCommandFromFile(file_name="get_user_data.sql")
         sql_command = sql_command.replace("user_id", user_id)
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        return result.fetchone()
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchone()
 
     def setUserWord(self, user_id, word):
         sql_command = self.getCommandFromFile(file_name="set_user_word.sql")
         sql_command = sql_command.replace("user_id", user_id)
         sql_command = sql_command.replace("word_str", word)
-        self.connection.execute(sqlalchemy.text(sql_command))
-        self.connection.commit()
+        self.cursor.execute(sql_command)
+        self.commit()
 
     def getUserWord(self, user_id):
         sql_command = self.getCommandFromFile(file_name="get_user_word.sql")
         sql_command = sql_command.replace("user_id", user_id)
-        result = self.connection.execute(sqlalchemy.text(sql_command))
-        return result.fetchone()
+        self.cursor.execute(sql_command)
+        return self.cursor.fetchone()
 
     def getCommandFromFile(self, file_name: str):
         file_path = os.path.join(dir_path, "sql", file_name)

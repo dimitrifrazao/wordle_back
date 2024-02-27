@@ -1,5 +1,5 @@
 import sys
-import database
+import database_old as database
 
 def main(argv):
     kwargs = {}
