@@ -5,11 +5,11 @@ file_path = os.path.join(dir_path, "static", "server_data.js")
 
 class ServerData:
 
-    LINES = ("var server_ip = '<HOST>';", "var server_port = '<PORT>';")
+    LINE = '''window.REACT_APP_API_URL="<IP>:<PORT>";'''
 
     @classmethod
     def createFile(cls, server_ip, server_port):
+        line = cls.LINE.replace("<IP>", server_ip).replace("<PORT>", server_port)
         f = open(file_path, 'w')
-        f.write(cls.LINES[0].replace("<HOST>", server_ip))
-        f.write(cls.LINES[1].replace("<PORT>", server_port))
+        f.write(line)
         f.close()

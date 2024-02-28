@@ -1,1 +1,1 @@
-var server_ip = 'localhost';var server_port = '5000';
+window.REACT_APP_API_URL="localhost:5000";

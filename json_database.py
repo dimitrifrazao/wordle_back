@@ -17,6 +17,9 @@ class Database:
         self.words_set = set(self.words)
         self.user_data = {}
 
+    def isUserIdValid(self, user_id):
+        return user_id in self.user_data
+
     def getWord(self):
         return self.words[random.randint(0, len(self.words)-1)]
     
