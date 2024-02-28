@@ -10,6 +10,7 @@ class ServerData:
     @classmethod
     def createFile(cls, server_ip, server_port):
         line = cls.LINE.replace("<IP>", server_ip).replace("<PORT>", server_port)
+        print('server data: ', line)
         f = open(file_path, 'w')
         f.write(line)
         f.close()
