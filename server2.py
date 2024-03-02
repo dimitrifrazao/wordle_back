@@ -107,10 +107,11 @@ def wordle():
             if turn == 6:
                 print("missed all guesses")
                 db.removeUser(user_id=user_id)
-                return jsonify({'status':Status.MISS_ALL.value, 'letter_colors': letter_colors, 'word':user_word})
+                return jsonify({'status':Status.MISS_ALL.value, 'letter_colors': letter_colors, 'word':user_word, "missed":word})
             else:
                 print("missed word")
                 return jsonify({'status':Status.MISMATCH.value, 'letter_colors': letter_colors, 'word':None})
+            
 
 
 if __name__ == '__main__':
