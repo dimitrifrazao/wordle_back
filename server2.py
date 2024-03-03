@@ -69,7 +69,7 @@ def wordle():
             return_data = {'status':Status.INVALID_USER_ID.value, 'error':message}
             return make_response(jsonify(return_data), 422)
 
-        word = str(request.args.get(WORD_ARG))
+        word = str(request.args.get(WORD_ARG)).lower()
         letter_colors = '     '
         word_exists = db.hasWord(word=word)
         if word_exists is False:

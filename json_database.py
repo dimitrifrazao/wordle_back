@@ -11,9 +11,9 @@ class Database:
             self.word = word         
 
     def __init__(self) -> None:
-        with open('combined_wordlist.txt', 'r') as file:
+        with open('word_list.txt', 'r') as file:
             data = file.readlines()
-        self.words = [d.rstrip() for d in data][1:]
+        self.words = [d.rstrip() for d in data]
         self.words_set = set(self.words)
         self.user_data = {}
 
