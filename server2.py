@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, send_from_directory, json, jsonify, make_response
 from flask_cors import CORS
 import uuid
@@ -20,11 +21,6 @@ class Status(enum.Enum):
 
 USER_ID_ARG = "userid"
 WORD_ARG = "word"
-
-ip = '44.218.136.154' # aws ec2 elastic ip address
-port = 5000
-host='0.0.0.0'
-debug = True
     
 db = json_database.Database()
 app = Flask(__name__)
@@ -113,6 +109,10 @@ def wordle():
                 return jsonify({'status':Status.MISMATCH.value, 'letter_colors': letter_colors, 'word':None})
             
 
+ip = '44.218.136.154' # aws ec2 elastic ip address
+port = 5000
+host='0.0.0.0'
+debug = True
 
 if __name__ == '__main__':
     argv = sys.argv[1:]
@@ -121,4 +121,9 @@ if __name__ == '__main__':
         port = int(argv[1])
     ServerData.createFile(str(ip), str(port))
 
-    app.run(host=host, port=port, debug=debug)
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    key_path = os.path.join(dir_path, "ssl/private.key")
+    cert_path = os.path.join(dir_path, "ssl/certificate.crt")
+    context = (cert_path, key_path)
+
+    app.run(host=host, port=port, debug=debug, ssl_context=context)
