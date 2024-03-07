@@ -1,1 +1,0 @@
-UPDATE `game` SET `guess` = 'word' WHERE `game`.`userId` = 'user_id';

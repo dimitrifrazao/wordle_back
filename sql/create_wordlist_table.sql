@@ -1,1 +1,0 @@
-CREATE TABLE `wordList` (words varchar(5), PRIMARY KEY(words));

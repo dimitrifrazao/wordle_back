@@ -1,1 +1,0 @@
-SELECT * FROM `game` WHERE (`game`.`userId` = 'user_id')

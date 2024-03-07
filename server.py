@@ -6,7 +6,6 @@ import sys
 import enum
 import logging
 import json_database
-from server_data import ServerData
 logging.getLogger('flask_cors').level = logging.DEBUG
 
 class Status(enum.Enum):
@@ -28,8 +27,12 @@ CORS(app)
 
 @app.route("/")
 def index():
-    return send_from_directory("static/dist", "index.html")
-    #render_template("static/dist/index.html", data=data)
+    app.redirect("https://dimitrifrazao.github.io/wordle_front")
+
+@app.route("/api", methods=['GET'])
+def api():
+    pass
+
 
 @app.route('/wordle', methods=['GET', 'POST'])
 def wordle():
@@ -107,19 +110,18 @@ def wordle():
             else:
                 print("missed word")
                 return jsonify({'status':Status.MISMATCH.value, 'letter_colors': letter_colors, 'word':None})
-            
-
-ip = '44.218.136.154' # aws ec2 elastic ip address
-port = 5000
-host='0.0.0.0'
-debug = True
 
 if __name__ == '__main__':
+
+    ip = '44.218.136.154' # aws ec2 elastic ip address
+    port = 5000
+    host='0.0.0.0'
+    debug = True
+
     argv = sys.argv[1:]
     if len(argv) > 0:
         ip = str(argv[0])
         port = int(argv[1])
-    ServerData.createFile(str(ip), str(port))
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     key_path = os.path.join(dir_path, "ssl/private.key")

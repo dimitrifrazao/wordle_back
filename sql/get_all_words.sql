@@ -1,1 +1,0 @@
-SELECT words FROM `wordList`;

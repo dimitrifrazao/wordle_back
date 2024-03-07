@@ -1,1 +1,0 @@
-INSERT INTO `wordList` (`words`) VALUES ('word_str');

@@ -1,1 +1,0 @@
-UPDATE `game` SET `word` = 'word_str' WHERE `game`.`userId` = 'user_id';
