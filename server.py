@@ -124,12 +124,14 @@ if __name__ == '__main__':
 
     port = 5000
     host='0.0.0.0'
-    debug = True
+    debug = False
     useSSL = True
 
     argv = sys.argv[1:]
     if '-skipssl' in argv:
         useSSL = False
+    if '-debug' in argv:
+        debug = True
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     key_path = os.path.join(dir_path, "ssl/private.key")
