@@ -35,6 +35,11 @@ def index():
 def api():
     return jsonify({'api':'not setup yet'})
 
+@app.route("/wordle/size", methods=['GET'])
+def wordleSize():
+    size = len(db.user_data)
+    return jsonify({'size':size})
+
 @app.route('/wordle', methods=['GET', 'POST'])
 def wordle():
     if request.method == 'GET':
